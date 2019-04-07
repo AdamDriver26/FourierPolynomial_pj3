@@ -27,7 +27,7 @@ public class FourierPolynomial extends RealFunction
     FourierPolynomial(double zeroCoefficient, double[] aArray, double[] bArray)
     {
         a0 = zeroCoefficient;
-        // Ensures aj and bj are the same length using the lengthEqualiser method.
+        // Uses the lengthEqualiser method to ensure aj and bj are the same length.
         aj = lengthEqualiser(aArray, bArray.length);
         bj = lengthEqualiser(bArray, aArray.length);
     }
@@ -108,10 +108,73 @@ public class FourierPolynomial extends RealFunction
     }
     
     public FourierPolynomial add (FourierPolynomial f)
-    {   
+    {
+        int n = this.aj.length;
+        f.aj = lengthEqualiser(f.aj, n);
+        f.bj = lengthEqualiser(f.bj, n);
+        
         f.a0 += this.a0;
-        // ......
+        for (int i=0; i<n; i++)
+        {
+            f.aj[i] += this.aj[i];
+            f.bj[i] += this.bj[i];
+        }
         return f;
+    }
+    
+    public FourierPolynomial multiply (FourierPolynomial f)
+    {
+        int k = f.aj.length; // order of the given FourierPolynomial
+        int l = this.aj.length; // order of the original FourierPolynomial
+        int n = k+l;
+        
+        double newA0 = f.a0; // Wrong
+        double[] newA = new double[n];
+        double[] newB = new double[n];
+        //...
+        FourierPolynomial newFourier = new FourierPolynomial(newA0,newA,newB);
+        return newFourier;
+    }
+    
+    private static boolean checkInRange (double x)
+    {
+        if (Math.abs(x) <= Math.pow(10,-10))
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
+    
+    public FourierPolynomial derivative (FourierPolynomial f)
+    {
+        //...
+        return f;
+    }
+    
+    public FourierPolynomial antiderivative (FourierPolynomial f)
+    {
+        //...
+        return f;
+    }
+    
+    
+    // REMOVE THIS BEFORE SUBMITTING
+    public static FourierPolynomial test ()
+    {
+        double Xa0 = 2.0;
+        double[] Xaj = {2.5,3.0,3.5};
+        double[] Xbj = {4.0,4.5};
+        FourierPolynomial X = new FourierPolynomial(Xa0,Xaj,Xbj);
+        
+        double t1a0 = 1.0;
+        double[] t1aj = {0,0,0,1};
+        double[] t1bj = {0,0,0,0};
+        FourierPolynomial test1 = new FourierPolynomial(t1a0,t1aj,t1bj);
+        
+        return X.add(test1);
     }
 }
 

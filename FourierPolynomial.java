@@ -89,9 +89,10 @@ public class FourierPolynomial extends RealFunction
     {
         int n = aj.length;
         double value = a0/2.0;
-        for (int j=1; j<n; j++)
+        for (int j=1; j<=n; j++)
         {
-            value += aj[j]*Math.cos(j*x) + bj[j]*Math.sin(j*x);
+            
+            value += aj[j-1]*Math.cos(j*x) + bj[j-1]*Math.sin(j*x);
         }
         return value;
     }
@@ -100,9 +101,9 @@ public class FourierPolynomial extends RealFunction
     {
         int n = aj.length;
         double value = 0.0;
-        for (int j=1; j<n; j++)
+        for (int j=1; j<=n; j++)
         {
-            value += bj[j]*Math.cos(j*x) - aj[j]*Math.sin(j*x);
+            value += j*(bj[j-1]*Math.cos(j*x) - aj[j-1]*Math.sin(j*x));
         }
         return value;
     }
@@ -122,15 +123,72 @@ public class FourierPolynomial extends RealFunction
         return f;
     }
     
+   /* private int findLongest (FourierPolynomial f)
+    {
+        if (this.aj.length >= f.aj.length)
+        {
+            return this.aj.length;
+        }
+        else
+        {
+            return f.aj.length;
+        }
+    } */
+    
     public FourierPolynomial multiply (FourierPolynomial f)
     {
-        int k = f.aj.length; // order of the given FourierPolynomial
         int l = this.aj.length; // order of the original FourierPolynomial
-        int n = k+l;
+        int m = f.aj.length; // order of the given FourierPolynomial
+        //int longest = findLongest(f);
+        int n = l+m;
         
-        double newA0 = f.a0; // Wrong
+        double newA0 = (f.a0*this.a0)/2.0; // True for all Fourier polynomials
+        // Includes constant values derived from other non-zero coefficients 
+        for (int i=0; i<l; i++)
+        {
+            newA0 = this.aj[i]*f.aj[i] + this.bj[i]*f.bj[i]; 
+        }
+        
         double[] newA = new double[n];
+        // Deal with coefficients from only aj of each polynomial for newA
+        for (int i=1; i<=n; i++) // Cycles through coefficients of newA
+        {
+            for (int p=0; p<l; p++) // Cycles through coefficients of this.aj
+            {
+                for (int q=0; p<l; p++) // Cycles through coefficients of f.aj
+                {
+                    // True for i odd
+                    if(i%2==1 && (p+q)%i==0)
+                    {
+                        newA[i-1] += this.aj[p]*f.aj[q];
+                        
+                    }
+                    // True for i even
+                    if(i%2==0 && (p+q)%i==0)
+                    {
+                        newA[i-1] += 0.0; // Wrong
+                    }
+                }
+            }
+            //...
+        }
+        // Deal with coefficients from only bj of each polynomial for newA
+        for (int i=0; i<n; i++) // Cycles through coefficients of newA
+        {
+            //...
+        }
+        
         double[] newB = new double[n];
+        // Deal with coefficients from only aj of each polynomial for newB
+        for (int i=1; i<=n; i++) // Cycles through coefficients of newB
+        {
+            //...
+        }
+        // Deal with coefficients from only bj of each polynomial for newB
+        for (int i=0; i<n; i++) // Cycles through coefficients of newB
+        {
+            //...
+        }
         //...
         FourierPolynomial newFourier = new FourierPolynomial(newA0,newA,newB);
         return newFourier;
@@ -162,11 +220,11 @@ public class FourierPolynomial extends RealFunction
     
     
     // REMOVE THIS BEFORE SUBMITTING
-    public static FourierPolynomial test ()
+    public static double test ()
     {
-        double Xa0 = 2.0;
-        double[] Xaj = {2.5,3.0,3.5};
-        double[] Xbj = {4.0,4.5};
+        double Xa0 = 1.0;
+        double[] Xaj = {2.0,3.0};
+        double[] Xbj = {4.0,5.0};
         FourierPolynomial X = new FourierPolynomial(Xa0,Xaj,Xbj);
         
         double t1a0 = 1.0;
@@ -174,7 +232,7 @@ public class FourierPolynomial extends RealFunction
         double[] t1bj = {0,0,0,0};
         FourierPolynomial test1 = new FourierPolynomial(t1a0,t1aj,t1bj);
         
-        return X.add(test1);
+        return X.derivativeValueAt(2.0);
     }
 }
 

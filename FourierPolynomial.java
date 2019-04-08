@@ -150,46 +150,52 @@ public class FourierPolynomial extends RealFunction
         }
         
         double[] newA = new double[n];
-        // Deal with coefficients from only aj of each polynomial for newA
-        for (int i=1; i<=n; i++) // Cycles through coefficients of newA
+        double[] newB = new double[n];
+        for (int i=0; i<=n; i++) // Cycles through newFourier coefficients to be found
         {
-            for (int p=0; p<l; p++) // Cycles through coefficients of this.aj
+            for (int p=0; p<l; p++) // Cycles through indexes of the original FourierPolynomial used in calculation
             {
-                for (int q=0; p<l; p++) // Cycles through coefficients of f.aj
+                for (int q=0; q<m; q++) // Cycles through indexes of the FourierPolynomial f used in calculation
                 {
-                    // True for i odd
-                    if(i%2==1 && (p+q)%i==0)
+                    if(p+q==i+1) // Pattern found doing paper calculations
                     {
-                        newA[i-1] += this.aj[p]*f.aj[q];
-                        
+                        newA[i] += (this.aj[p]*f.aj[q])/2.0; // aj*aj values for newA
+                        if(p>0 && q>0) // Ensures values are in range of bj
+                        {
+                            // negative sign when p+q=i for bj*bj coefficients
+                            newA[i] -= (this.bj[p]*f.bj[q])/2.0; // bj*bj values for newA
+                            newB[i] += (this.aj[p]*f.bj[q])/2.0; // aj*bj values for newB
+                            newB[i] += (this.bj[p]*f.aj[q])/2.0; // bj*aj values for newB
+                        }
+                        if(p==0)
+                        {
+                            newB[i-1] += (this.aj[p]*f.bj[q])/2.0;
+                        }
+                        if(q==0)
+                        {
+                            newB[i-1] += (this.bj[p]*f.aj[q])/2.0;
+                        }
                     }
-                    // True for i even
-                    if(i%2==0 && (p+q)%i==0)
+                    else if(Math.abs(p-q)==i+1) // Pattern found doing paper calculations
                     {
-                        newA[i-1] += 0.0; // Wrong
+                        // newA
+                        newA[i-1] += (this.aj[p]*f.aj[q])/2.0; // aj*aj values for newA
+                        if(p>0 && q>0) // Ensures values are in range of bj
+                        {
+                            newA[i-1] += (this.bj[p]*f.bj[q])/2.0; // bj*bj values for newA
+                        }
+                        // !!                                                    !!
+                        // !!Add values calculating aj*bj and bj*aj for this case!!
+                        // !!                                                    !!
+                    }
+                    
+                    else if(i==0 && p==0 && q==0) // Strange case from paper calculations, don't really understand why this is
+                    {
+                        newB[0] += (this.aj[0]*f.bj[0])/2.0;
                     }
                 }
             }
-            //...
         }
-        // Deal with coefficients from only bj of each polynomial for newA
-        for (int i=0; i<n; i++) // Cycles through coefficients of newA
-        {
-            //...
-        }
-        
-        double[] newB = new double[n];
-        // Deal with coefficients from only aj of each polynomial for newB
-        for (int i=1; i<=n; i++) // Cycles through coefficients of newB
-        {
-            //...
-        }
-        // Deal with coefficients from only bj of each polynomial for newB
-        for (int i=0; i<n; i++) // Cycles through coefficients of newB
-        {
-            //...
-        }
-        //...
         FourierPolynomial newFourier = new FourierPolynomial(newA0,newA,newB);
         return newFourier;
     }

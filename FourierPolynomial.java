@@ -1,4 +1,6 @@
-import org.apache.commons.math3.*;
+/** 
+ * @author Adam Driver
+ */
 
 public class FourierPolynomial extends RealFunction 
 {
@@ -35,8 +37,8 @@ public class FourierPolynomial extends RealFunction
     /**
      * Extends an array with zeros if it is shorter than the given value.
      * 
-     * @param the array to be extended.
-     * @param the length the array should be extended to.
+     * @param shortArray the array to be extended.
+     * @param n the length the array should be extended to.
      * @return an array extended with zeros to length n. 
      */
     private static double[] lengthEqualiser(double[] shortArray, int n)
@@ -58,12 +60,16 @@ public class FourierPolynomial extends RealFunction
         }
     }
     
-    /**
+    /** 
+     * Returns the the jth coefficient of the Fourier polynomial.
      * 
+     * @param j the term of the coefficient.
+     * @param wantB determines whether to return the coefficient of the cosine or sine value.
+     * @return the jth coefficient.
      */
     public double getCoefficient(int j, boolean wantB)
     {
-        int n = aj.length; //Could use either aj or bj since they are the same length when constructed.
+        int n = aj.length; // Could use either aj or bj since they are the same length by construction. This convention is used throughout.
         if (j >= n)
         {
             return 0.0;
@@ -85,18 +91,29 @@ public class FourierPolynomial extends RealFunction
         }
     }
     
+    /**
+     * Calculates the value of the Fourier polynomial at a point.
+     * 
+     * @param x the point to consider.
+     * @return the value of the Fourier polynomial at the point x.
+     */
     public double valueAt (double x)
     {
         int n = aj.length;
-        double value = a0/2.0;
+        double value = a0/2.0; // Immediatly calculates the constant value which is unaffected by x.
         for (int j=1; j<=n; j++)
         {
-            
             value += aj[j-1]*Math.cos(j*x) + bj[j-1]*Math.sin(j*x);
         }
         return value;
     }
     
+    /**
+     * Calculates the value of the Fourier polynomials derivative at a point.
+     * 
+     * @param x the point to consider.
+     * @return the value of the Fourier polynomials derivative at the point x.
+     */
     public double derivativeValueAt (double x)
     {
         int n = aj.length;
@@ -108,11 +125,18 @@ public class FourierPolynomial extends RealFunction
         return value;
     }
     
+    /**
+     * Adds a Fourier polynomial.
+     * 
+     * @param f the Fourier polynomial to add.
+     * @return the coefficients of the sum as a FourierPolynomial object.
+     * @see FourierPolynomial
+     */
     public FourierPolynomial add (FourierPolynomial f)
     {
         int n = this.aj.length;
-        f.aj = lengthEqualiser(f.aj, n);
-        f.bj = lengthEqualiser(f.bj, n);
+        f.aj = lengthEqualiser(this.aj, n);
+        f.bj = lengthEqualiser(this.bj, n);
         
         f.a0 += this.a0;
         for (int i=0; i<n; i++)
@@ -200,28 +224,61 @@ public class FourierPolynomial extends RealFunction
         return newFourier;
     }
     
-    private static boolean checkInRange (double x)
+    private static boolean insignificant (double x)
     {
         if (Math.abs(x) <= Math.pow(10,-10))
         {
             return true;
         }
-        else 
+        else
         {
             return false;
         }
     }
     
-    public FourierPolynomial derivative (FourierPolynomial f)
+    /**
+     * Finds the derivative of the Fourier polynomial.
+     * 
+     * @return the coefficients of the derivative as a FourierPolynomial object.
+     * @see FourierPolynomial
+     */
+    public FourierPolynomial derivative ()
     {
-        //...
-        return f;
+        int n = this.aj.length;
+        double[] dAj = new double[n];
+        double[] dBj = new double[n];
+        for (int i=1; i<=n; i++)
+        {
+            dAj[i] = i*this.bj[i];
+            dBj[i] = -i*this.aj[i];
+        }
+        return new FourierPolynomial(0,dAj,dBj);
     }
     
-    public FourierPolynomial antiderivative (FourierPolynomial f)
+    /**
+     * Finds the antiderivative of the Fourier polynomial.
+     * 
+     * @return the coefficients of the antiderivative as a FourierPolynomial object.
+     * @see FourierPolynomial
+     */
+    public FourierPolynomial antiderivative ()
     {
-        //...
-        return f;
+        if (insignificant(this.a0))
+        {    
+            int n = this.aj.length;
+            double[] aAj = new double[n];
+            double[] aBj = new double[n];
+            for (int i=1; i<=n; i++)
+            {
+                aAj[i] = -this.bj[i]/i;
+                aBj[i] = i*this.aj[i]/i;
+            }
+            return new FourierPolynomial(0,aAj,aBj);
+        }
+        else
+        {
+            throw new java.lang.IllegalArgumentException("The antiderivative cannot be found for non-zero a0");
+        }
     }
     
     
@@ -241,5 +298,3 @@ public class FourierPolynomial extends RealFunction
         return X.derivativeValueAt(2.0);
     }
 }
-
-

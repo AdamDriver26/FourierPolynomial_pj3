@@ -1,30 +1,19 @@
-/** 
- * @author Adam Driver
+/**
+ * An extension to the RealFunction class which represents Fourier polynomials and allows
+ * for their addition and multiplication as well as finding derivatives and antiderivatives. 
  */
-
 public class FourierPolynomial extends RealFunction 
 {
-    /**
-     * The zeroth Fourier coefficient.
-     */
     double a0;
-    
-    /**
-     * An array of the cosine Fourier coefficients.
-     */
     double[] aj;
-    
-    /**
-     * An array of the sine Fourier coefficients.
-     */
     double[] bj;
     
     /**
-     * Constructor for the class. 
+     * Constructor for the FourierPolynomial class. 
      * 
      * @param zeroCoefficient value of the constant a0.
-     * @param aArray value of the aj array.
-     * @param bArray value of the bj array.
+     * @param aArray an array of the Fourier polynomials cosine coefficients.
+     * @param bArray an array of the Fourier polynomials sine coefficients.
      */
     FourierPolynomial(double zeroCoefficient, double[] aArray, double[] bArray)
     {

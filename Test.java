@@ -9,19 +9,22 @@ public class Test extends RealFunction
 {
     public double valueAt(double x)
     {
-        return Math.pow(1-x*x,0.5)+Math.pow(x,0.6);
+        return Math.exp(-x);
     }
 
     static FourierPolynomial testTransformer ()
     {
         Test f = new Test();
         
-        return FourierTransformer.approximate(f,10);
+        return FourierTransformer.approximate(f,4);
     }
     
-    static double result()
+    public FourierPolynomial testHeat ()
     {
         Test f = new Test();
-        return FourierTransformer.compositeTrapezium(f,0.0,2*Math.PI,10000)/Math.PI;
+        HeatEquation h = new HeatEquation(0.1,f,5);
+        
+        FourierPolynomial ft = h.getSolution(12);
+        return ft;
     }
 }

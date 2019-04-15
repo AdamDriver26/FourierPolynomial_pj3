@@ -19,12 +19,12 @@ public class Test extends RealFunction
         return FourierTransformer.approximate(f,4);
     }
     
-    public FourierPolynomial testHeat ()
+    public double testHeat ()
     {
         Test f = new Test();
         HeatEquation h = new HeatEquation(0.1,f,5);
         
-        FourierPolynomial ft = h.getSolution(12);
-        return ft;
+        //FourierPolynomial ft = h.evaluateSolution(2,-1);
+        return h.evaluateSolution(2,-1);
     }
 }
